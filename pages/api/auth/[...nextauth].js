@@ -8,10 +8,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-function testx() {
-  return 'asds';
-}
-
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default NextAuth({

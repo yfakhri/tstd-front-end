@@ -1,38 +1,34 @@
 import React from 'react';
-import Link from 'next/link';
 import Layout from '../../components/layout';
-import fetcher from '../../libs/fetcher';
-import useSWR from 'swr';
 import Grid from '@material-ui/core/Grid';
+import useSWR from 'swr';
+import fetcher from '../../libs/fetcher';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
-import ListIcon from '@material-ui/icons/List';
-import Tooltip from '@material-ui/core/Tooltip';
+import { useRouter } from 'next/router';
 import { ResponsiveBar } from '@nivo/bar';
 
-export default function Chart() {
+export default function ChartDetail() {
+  const router = useRouter();
+  const { qid } = router.query;
   const { data, error } = useSWR(
     `
     {
-      questionCountAllAnswers
+      questionCountDetail(questionId:"${qid}")
     }`,
     fetcher
   );
   const chartData = [];
   if (data) {
-    if (data.questionCountAllAnswers) {
-      data.questionCountAllAnswers.forEach((quest) =>
+    if (data.questionCountDetail) {
+      data.questionCountDetail.details.forEach((quest) =>
         chartData.push({
-          id: quest._id,
           title: quest.qname,
           type: quest.qtype,
-          data: quest.answercount.map((q) => {
-            return { id: q.name, Jumlah: q.value };
-          }),
-          legend: quest.answercount.map((q) => {
-            return { name: q.name };
-          }),
+          key: quest.answerdetail.keys,
+          data: quest.answerdetail.data,
         })
       );
     }
@@ -42,27 +38,28 @@ export default function Chart() {
   return (
     <Layout title="Chart" role="admin">
       <Grid container spacing={3}>
+        {data && chartData && (
+          <Grid item xs={12}>
+            <Typography variant="h4">
+              <IconButton onClick={() => router.back()}>
+                <ArrowBackIcon />
+              </IconButton>
+              Detail {data.questionCountDetail.title}
+            </Typography>
+          </Grid>
+        )}
         {data &&
           chartData &&
           chartData.map((chart, index) => (
             <Grid key={index} item xs={12} sm={6}>
               <Paper style={{ height: '400px' }}>
-                <Typography variant="h5">
-                  {chart.title}{' '}
-                  <Link href={`/chart/${chart.id}`}>
-                    <Tooltip title="Detail">
-                      <IconButton>
-                        <ListIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Link>
-                </Typography>
-
+                <Typography variant="h5">{chart.title}</Typography>
                 <ResponsiveBar
                   data={chart.data}
-                  keys={['Jumlah']}
+                  keys={chart.key}
                   margin={{ top: 50, right: 130, bottom: 100, left: 60 }}
-                  colorBy="index"
+                  colorBy="id"
+                  colors={{ scheme: 'category10' }}
                   axisBottom={{
                     tickSize: 5,
                     tickPadding: 5,
@@ -73,7 +70,7 @@ export default function Chart() {
                   }}
                   legends={[
                     {
-                      dataFrom: 'indexes',
+                      dataFrom: 'keys',
                       anchor: 'bottom-right',
                       direction: 'column',
                       justify: false,

@@ -143,7 +143,7 @@ export default function Layout({ children, title, window, role }) {
             </Link>
           )}
           {session.user.role === 'admin' && (
-            <Link href="chart">
+            <Link href="/chart">
               <ListItem button selected={router.pathname == '/chart'}>
                 <ListItemIcon>
                   <BarChartIcon />
