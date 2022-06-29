@@ -136,6 +136,7 @@ export default NextAuth({
         return session;
       } catch (err) {
         session.error = err;
+        console.log(err)
 
         return session;
       }

@@ -27,6 +27,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 
+import { createTheme } from '@material-ui/core/styles';
+import { green } from '@material-ui/core/colors';
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -264,7 +267,11 @@ export default function QuestionList() {
                 <Grid item xs={6} sm={3} key={index}>
                   <Button
                     variant="contained"
-                    color="primary"
+                    color={
+                      data.questionAllUserAnswers[quest._id]
+                        ? 'primary'
+                        : 'secondary'
+                    }
                     onClick={() => handlerClickQuestion(quest)}
                     disabled={disButton(quest, data.questionAllUserAnswers)}
                     fullWidth
